@@ -3,6 +3,9 @@ import { Link } from 'react-router-dom';
 import { Eye, EyeOff, Mail, Lock } from 'lucide-react';
 import Button from '../components/Button';
 import Input from '../components/Input';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
@@ -10,12 +13,26 @@ export default function Login() {
     email: '',
     password: ''
   });
+  
+  const navigate = useNavigate()
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // TODO: Implement login logic
-    console.log('Login attempt:', formData);
-  };
+  const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  try {
+    const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/users/login`, formData);
+    
+    // You can store the token in localStorage or context
+    localStorage.setItem('token', response.data.token);
+    
+    console.log('✅ Login success:', response.data);
+    navigate('/')
+    // Redirect user or show success
+    // For example, navigate to dashboard:
+    // navigate('/dashboard');
+  } catch (error) {
+    console.error('❌ Login failed:', error);
+  }
+};
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({

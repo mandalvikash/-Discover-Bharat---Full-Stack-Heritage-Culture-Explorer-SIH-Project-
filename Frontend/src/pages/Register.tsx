@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Eye, EyeOff, Mail, Lock, User, Phone } from 'lucide-react';
 import Button from '../components/Button';
 import Input from '../components/Input';
+import axios from 'axios';
 
 export default function Register() {
   const [showPassword, setShowPassword] = useState(false);
@@ -15,11 +16,34 @@ export default function Register() {
     confirmPassword: ''
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // TODO: Implement registration logic
-    console.log('Registration attempt:', formData);
-  };
+  const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  console.log(formData);
+  if (formData.password !== formData.confirmPassword) {
+    alert("Passwords do not match!");
+    return;
+  }
+
+  try {
+    const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/users/register`, {
+      name: formData.name,
+      email: formData.email,
+      phone: formData.phone,
+      password: formData.password
+    });
+    
+
+    alert("Registration successful!");
+    console.log(response.data);
+
+    // Optional: redirect to login page after successful registration
+    window.location.href = "/login";
+  } catch (error) {
+    console.error(error);
+    
+  }
+};
+
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
